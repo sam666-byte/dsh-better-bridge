@@ -1,0 +1,5 @@
+# chatbrain relay + session extractor
+# Python 3.11+ required.
+deepseek-pow>=0.0.1   # DeepSeek web PoW challenge solver (pulls in wasmtime)
+wasmtime              # runtime used by deepseek-pow
+selenium>=4           # only needed by relay/extract.py (Firefox session extraction)

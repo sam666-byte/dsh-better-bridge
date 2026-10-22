@@ -1,0 +1,15 @@
+# Live account material — NEVER commit
+.websession.json
+.env
+.credentials.yaml
+
+# Logs (relay2-replies.log contains raw conversations)
+*.log
+
+# Runtime / language noise
+__pycache__/
+sessions/
+node_modules/
+
+# Local Firefox profile used by the extractor
+ff-profile/
