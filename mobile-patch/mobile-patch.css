@@ -1,0 +1,149 @@
+/* ============================================================
+   DeepSeek Harness — mobile patch (user-installed, 2026-10-21)
+   Makes the desktop web GUI usable on a phone:
+   - labeled rail buttons (icon + text), bigger tap targets
+   - sidebar becomes a floating drawer instead of crushing the chat
+   - mneme memory overlay goes full-width with stacked columns
+   Applies only on narrow screens; desktop layout untouched.
+   ============================================================ */
+@media (max-width: 760px) {
+
+  /* ---------- rail: wider, buttons become icon+label stacks ---------- */
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) {
+    width: 64px !important;
+    flex: 0 0 64px !important;
+  }
+  .hHd-Xa_root.hHd-Xa_collapsed { width: 64px !important; }
+
+  /* Scoped to the COLLAPSED rail only (sidebar column containing a
+     collapsed root) — the expanded sidebar has its own text rows and
+     must not be touched. */
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Open sidebar"],
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="New session"],
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Open memory panel"],
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Plugins"],
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Automation tasks"],
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Add workspace"],
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Search sessions"],
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Account menu"] {
+    width: 100% !important;
+    height: 56px !important;
+    min-height: 56px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 3px !important;
+    border-radius: 10px !important;
+  }
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Open sidebar"]::after,
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="New session"]::after,
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Open memory panel"]::after,
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Plugins"]::after,
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Automation tasks"]::after,
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Add workspace"]::after,
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Search sessions"]::after,
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Account menu"]::after {
+    font-size: 10.5px !important;
+    line-height: 1 !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.01em !important;
+    opacity: 1 !important;
+    pointer-events: none !important;
+  }
+  /* bigger rail icons */
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Open sidebar"] svg,
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="New session"] svg,
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Open memory panel"] svg,
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Plugins"] svg,
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Automation tasks"] svg,
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Add workspace"] svg,
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Search sessions"] svg,
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Account menu"] svg {
+    width: 21px !important;
+    height: 21px !important;
+    flex: none !important;
+  }
+  /* the New session button wraps its icon in a mask span that pins the icon
+     to the top of the button, detaching it from the label — restack it */
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) .hHd-Xa_newSessionLabelMask,
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) .hHd-Xa_newSessionContent {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: auto !important;
+    transform: none !important;
+  }
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Open sidebar"]::after     { content: "Menu"; }
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="New session"]::after      { content: "Baru"; }
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Open memory panel"]::after { content: "Memori"; }
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Plugins"]::after          { content: "Plugin"; }
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Automation tasks"]::after { content: "Jadwal"; }
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Add workspace"]::after    { content: "Folder"; }
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Search sessions"]::after  { content: "Cari"; }
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Account menu"]::after     { content: "Akun"; }
+  /* the Add workspace button sits in an offset subtree; nudge it back in line */
+  .pI_x6G_sidebarCol:has(.hHd-Xa_collapsed) button[aria-label="Add workspace"] {
+    margin-left: 7px !important;
+    width: calc(100% - 7px) !important;
+  }
+
+  /* ---------- sidebar: floating drawer over the chat ---------- */
+  .pI_x6G_sidebarCol:has(.hHd-Xa_root:not(.hHd-Xa_collapsed)) {
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    z-index: 80 !important;
+    width: min(330px, 88vw) !important;
+    flex: none !important;
+    box-shadow: 0 0 48px rgba(0, 0, 0, 0.55) !important;
+  }
+  .hHd-Xa_root:not(.hHd-Xa_collapsed) { width: 100% !important; }
+
+  /* ---------- mneme memory overlay: full width, stacked ---------- */
+  /* the mneme sheet is 500px wide but sits at x=-251 (half off-screen);
+     pin it to the left edge at phone width, and scale it up a notch —
+     its built-in text sizes are desktop-small on a phone */
+  .mneme-overlay {
+    width: min(443px, 88.5vw) !important;
+    max-width: 88.5vw !important;
+    left: 0 !important;
+    right: auto !important;
+    transform: none !important;
+    translate: none !important;
+    zoom: 1.13 !important;
+  }
+  /* tab bar: the four tabs + tools block overflow the sheet width and the
+     tools overlap the Settings tab — slim the tabs so everything fits */
+  .mneme-vtabs {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+  .mneme-vtab {
+    font-size: 12.5px !important;
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+    gap: 4px !important;
+    flex: none !important;
+  }
+  .mneme-xtools { flex: none !important; }
+  .mneme-overlay [class*="mneme-"] {
+    max-width: 100vw !important;
+  }
+
+  /* ---------- file/review pane: bigger native close target ----------
+     the pane is full-screen at this width; its tab close (x) is a
+     20px icon in a crowded strip — enlarge the tap target. The
+     labelled way out is the floating button in mobile-patch.js. */
+  button[class*="_tabClose_"] {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+  }
+
+  /* ---------- general readability ---------- */
+  .wSkVaW_scrollBody { font-size: 15px !important; }
+  .wSkVaW_composerSeat { padding-left: 6px !important; padding-right: 6px !important; }
+}
