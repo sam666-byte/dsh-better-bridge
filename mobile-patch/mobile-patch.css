@@ -143,6 +143,21 @@
     min-width: 30px !important;
   }
 
+  /* ---------- drawer: roomier session rows + controls ----------
+     session rows ship 32px tall and the "show more sessions" button
+     28px — cramped thumb targets in the very list used to switch
+     sessions; the drawer's own collapse button is a small icon too */
+  .hHd-Xa_root:not(.hHd-Xa_collapsed) ._root_38jqx_3 {
+    min-height: 42px !important;
+  }
+  .hHd-Xa_root:not(.hHd-Xa_collapsed) [class*="sessionOverflowButton"] {
+    min-height: 38px !important;
+  }
+  .hHd-Xa_root:not(.hHd-Xa_collapsed) button[aria-label="Collapse sidebar"] {
+    min-width: 36px !important;
+    min-height: 36px !important;
+  }
+
   /* ---------- general readability ---------- */
   .wSkVaW_scrollBody { font-size: 15px !important; }
   .wSkVaW_composerSeat { padding-left: 6px !important; padding-right: 6px !important; }

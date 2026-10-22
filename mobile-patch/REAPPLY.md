@@ -6,13 +6,27 @@ The patch lives inside the dsh web frontend's `dist/` folder, which is
 ## What the patch does
 
 - `mobile-patch.css` — phone-width layout fixes: labelled rail buttons,
-  sidebar as a floating drawer, full-width memory overlay, and a bigger
-  tap target for the file/review pane's tab close (×).
-- `mobile-patch.js` — injects a floating **“‹ Kembali”** (back) pill.
-  The file/review pane is full-screen on phones but has no back button
-  (the app navigates by React state, so `history.back()` does nothing);
-  the pill appears only while that pane is open and presses the app's
-  own native Close / Collapse controls.
+  sidebar as a floating drawer, full-width memory overlay, a bigger
+  tap target for the file/review pane's tab close (×), and roomier
+  session rows (42px) plus a taller "show more sessions" button in the
+  drawer.
+- `mobile-patch.js` — two behaviours:
+  - Injects a floating **"‹ Kembali"** (back) pill. The file/review
+    pane is full-screen on phones but has no back button (the app
+    navigates by React state, so `history.back()` does nothing); the
+    pill appears only while that pane is open and presses the app's
+    own native Close / Collapse controls.
+  - Fixes session switching. At phone width the sidebar is a floating
+    drawer, but the app — built for a persistent desktop sidebar —
+    never closes it after a session is picked, so the chat opens
+    hidden behind the drawer. After a tap on a session row, the
+    drawer's New Session button, or a panel row, the script presses
+    the app's own "Collapse sidebar" button so the picked view is
+    revealed. Group/workspace headers are deliberately excluded:
+    tapping them expands the group and keeps the drawer open. (The
+    headers reuse the session-title CSS class for their label, nested
+    in a `YDXeBa_projectText`/`YDXeBa_projectRow` — the script checks
+    for that wrapper to tell headers and sessions apart.)
 
 ## Procedure
 
@@ -61,3 +75,10 @@ Open any session, tap a file in a tool result so the review pane opens
 full-screen: the “‹ Kembali” pill should sit at the bottom-left, and
 tapping it should return you to the chat. On the chat itself (and on
 desktop widths) the pill must stay hidden.
+
+Session switching: tap **Menu** on the rail to open the drawer, then
+tap a session — the drawer should close by itself and the picked chat
+should be visible. Sessions are grouped: the workspace group first,
+then **Ungrouped**; if that group is collapsed, tap its header to
+expand it (the drawer stays open), and tap **Show 10 more sessions**
+for the rest of the list.

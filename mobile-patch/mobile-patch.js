@@ -91,6 +91,72 @@
     tick();
   }
 
+  /* ---------- session-switch fix ----------
+     At phone width the expanded sidebar is a floating overlay (see
+     mobile-patch.css), but the app — built for a persistent desktop
+     sidebar — does not close it when a session is picked: the chat
+     opens hidden behind the drawer, which reads as "switching
+     sessions is broken". After a tap on a session row, the drawer's
+     New Session button, or a panel row, press the app's own
+     "Collapse sidebar" button so the picked view is revealed. */
+  function drawerOpen() {
+    return !!document.querySelector('.hHd-Xa_root:not(.hHd-Xa_collapsed)');
+  }
+
+  function collapseDrawer() {
+    var b = document.querySelector('button[aria-label="Collapse sidebar"]');
+    if (b) b.click();
+  }
+
+  /* The group/workspace headers reuse the session-title class
+     (YDXeBa_title) for their label span, nested inside a
+     YDXeBa_projectText / YDXeBa_projectRow. A title counts as a
+     SESSION title only when it is not inside one of those — other-
+     wise tapping a group header (to expand it) would also collapse
+     the drawer and the group could never be opened. */
+  function isSessionTitle(el) {
+    return !el.closest('[class*="YDXeBa_projectText"], [class*="YDXeBa_projectRow"]');
+  }
+
+  function sessionTitleCount(el) {
+    var n = 0, list = el.querySelectorAll('[class*="YDXeBa_title"]');
+    for (var i = 0; i < list.length; i++) {
+      if (isSessionTitle(list[i])) n++;
+    }
+    return n;
+  }
+
+  document.addEventListener('click', function (ev) {
+    if (!MQ.matches || !drawerOpen()) return;
+    var sb = document.querySelector('.hHd-Xa_root:not(.hHd-Xa_collapsed)');
+    var t = ev.target;
+    if (!sb || !t || !t.closest || !sb.contains(t)) return;
+    var hit = t.closest('[class*="hHd-Xa_newSession"], [class*="hHd-Xa_panelRow"]');
+    if (!hit) {
+      var titleEl = t.closest('[class*="YDXeBa_title"]');
+      if (titleEl && isSessionTitle(titleEl)) hit = titleEl;
+    }
+    if (!hit && !t.closest('button')) {
+      // tap landed on the row but outside the title (e.g. the timestamp):
+      // walk up to the session-row container — a row holds exactly ONE
+      // session title (group headers/sections hold many or none, and
+      // must never trigger this: expanding a group keeps the drawer open)
+      var p = t, hops = 0;
+      while (p && p !== sb && hops < 6 && !hit) {
+        if (p.querySelectorAll && sessionTitleCount(p) === 1 &&
+            p.getBoundingClientRect().height <= 64) {
+          hit = p;
+        }
+        p = p.parentElement; hops++;
+      }
+    }
+    if (!hit || !sb.contains(hit)) return;
+    setTimeout(function () {
+      if (drawerOpen()) collapseDrawer();
+      setTimeout(function () { if (drawerOpen()) collapseDrawer(); }, 500);
+    }, 300);
+  }, true);
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', start);
   } else {
