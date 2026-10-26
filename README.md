@@ -118,6 +118,7 @@ SSE stream.
 **Prerequisites**
 
 - Python 3.11+
+- Node.js LTS (the harness itself runs on Node; Python is only for the relay)
 - [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)
   installed separately
 - Firefox + geckodriver (for the one-time login/extraction)
@@ -158,6 +159,87 @@ curl http://127.0.0.1:20232/v1/chat/completions \
   -H 'Content-Type: application/json' \
   -d '{"model":"deepseek-chat","messages":[{"role":"user","content":"ping"}]}'
 ```
+
+### DeepSeek Web (4Free) — V3 + R1 as extra models (no official API)
+
+`d4f-wrapper/` adds **DeepSeek V3** (`deepseek-v3-d4f`) and **DeepSeek R1**
+(`deepseek-r1-d4f`) to the dsh model picker, through the same DeepSeek web
+chat the relay uses — no official API key. It is an OpenAI-compatible server
+(port 20233) built on [xtekky/deepseek4free](https://github.com/xtekky/deepseek4free),
+sharing the relay's userToken (read at runtime from `.websession.json`, never
+stored in the repo). Setup, provider YAML, and verification are in
+[`d4f-wrapper/README.md`](d4f-wrapper/README.md). Upstream is Jan 2025 and
+unmaintained — the wrapper carries the patches that keep it working (session
+path, JSON-patch SSE, first-fragment path, R1 thinking leak) plus the same
+DBS/tool-call handling as the relay (imported from `relay2.py`).
+
+### Windows (native, without WSL)
+
+The same flow works on Windows; the differences are the shell syntax and a
+few paths. Keep **3 separate terminals** open while in use:
+
+1. **Install Node.js LTS** from nodejs.org, then clone + install Python deps:
+   ```cmd
+   git clone https://github.com/sam666-byte/dsh-better-bridge
+   cd dsh-better-bridge
+   pip install -r requirements.txt
+   ```
+
+2. **Create a dedicated Firefox profile:** press `Win+R`, type
+   `firefox -ProfileManager`, create a new profile (e.g. "chatbrain"), log in
+   to chat.deepseek.com in that profile, then **close Firefox completely** —
+   the extractor cannot read a profile that is still open. The profile path is
+   something like
+   `C:\Users\<you>\AppData\Roaming\Mozilla\Firefox\Profiles\xxxx.chatbrain`
+
+3. **Set environment variables in CMD** (the Windows equivalent of `export`):
+   ```cmd
+   set CHATBRAIN_FF_PROFILE=C:\Users\<you>\AppData\Roaming\Mozilla\Firefox\Profiles\xxxx.chatbrain
+   set FIREFOX_BIN=C:\Program Files\Mozilla Firefox\firefox.exe
+   set GECKODRIVER_PATH=C:\path\to\geckodriver.exe
+   ```
+   `set` only applies to the terminal it runs in, so run steps 4–5 from the
+   same terminal (or use `setx` to make the variables permanent).
+
+4. **Extract the session** (Firefox must be fully closed; use `python`, not
+   `python3`):
+   ```cmd
+   python relay\extract.py
+   ```
+   Success = `.websession.json` appears in the repo folder.
+
+5. **Start the relay** and leave the terminal open:
+   ```cmd
+   python relay\relay2.py
+   ```
+   Check from another terminal: `curl http://127.0.0.1:20232/v1/models`
+
+6. **Start dsh in a new terminal** (if PowerShell complains about execution
+   policy, use CMD instead):
+   ```cmd
+   npx @deepseek-ai/dsh web --host 127.0.0.1 --port 3080 --no-open
+   ```
+   Do not use `--host 0.0.0.0` — dsh rejects wildcards. On a VPS, loopback is
+   enough: you reach the GUI from inside the VPS (e.g. over RDP). Open the
+   token URL printed in the console and log in with your DeepSeek account.
+
+7. **Register the relay as a dsh provider:** edit
+   `C:\Users\<you>\.dsh\profiles\web\cordis.patch.yml` and add an
+   OpenAI-compatible provider entry:
+   ```yaml
+   chatbrain:
+     baseURL: http://127.0.0.1:20232/v1
+     apiKeyEnv: CHATBRAIN_API_KEY   # any dummy value; relay is loopback
+     models: [deepseek-chat]
+   ```
+   Set `CHATBRAIN_API_KEY` to any dummy value, restart dsh, then select
+   provider **chatbrain** / model **deepseek-chat** in the GUI. Done — dsh now
+   runs on the free web chat.
+
+Notes: all ports are loopback, so no VPS firewall rules are needed. If the
+chat later errors or returns empty, the session token expired — just re-run
+step 4. The Better DeepSeek bridge plugin (see `PLUGIN.md`) is optional and
+can be added later.
 
 ## Configuration
 
