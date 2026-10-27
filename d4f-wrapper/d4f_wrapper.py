@@ -217,14 +217,21 @@ def recover_dsml_call(raw):
 
 DSML_DEBRIS_RE = re.compile(r"</?[^\s<>]*｜｜DSML｜｜[^>]*>")
 
+BARE_CALLS_RE = re.compile(r"</?\s*calls\s*>")
+
 def strip_dsml_debris(text):
     """Remove any leftover DSML markup from visible text, including malformed
     fragments without a leading '<' (e.g. '900000｜｜DSML｜｜>'). The literal
     '｜｜DSML｜｜' never occurs in legitimate content, so anything attached to
-    it on the same token is debris."""
-    if not text or "｜｜DSML｜｜" not in text:
+    it on the same token is debris. Also strips the bare '< calls>' opener
+    the R1 model emits instead of '<｜｜DSML｜｜ calls>' (seen 254x in
+    d4f-replies.log) — it survives the DSML regex and leaks into chat."""
+    if not text:
         return text
-    return DSML_DEBRIS_RE.sub("", text).strip()
+    if "｜｜DSML｜｜" in text:
+        text = DSML_DEBRIS_RE.sub("", text)
+    text = BARE_CALLS_RE.sub("", text)
+    return text.strip()
 
 
 def process_reply(raw):
@@ -322,4 +329,4 @@ class H(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     log("d4f wrapper up on", PORT)
-    ThreadingHTTPServer(("127.0.0.1", PORT), H).serve_forever()
+    ThreadingHTTPServer(("0.0.0.0", PORT), H).serve_forever()

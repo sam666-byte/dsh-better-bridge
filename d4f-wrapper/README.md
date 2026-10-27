@@ -31,6 +31,13 @@ Two more bugs found during verification (26 Oct 2026) and fixed in the
 wrapper: the SSE first-fragment path above, and R1 thinking fragments leaking
 into the answer (list-APPEND ops on `response/fragments` were ignored).
 
+27 Oct 2026 updates: the wrapper now binds `0.0.0.0:20233` (was `127.0.0.1`)
+so the phone apps (Nusantara Bots / Razako BYO) can reach it over LAN — note
+there is no auth, so anyone on the home WiFi can use it (it shares the
+owner's DeepSeek token). It also strips the bare `< calls>` opener the R1
+model emits instead of `<｜｜DSML｜｜ calls>` (observed 254x) — it survived the
+DSML debris regex and leaked into chat as visible "`< calls>`" bubbles.
+
 ## DBS / tool-call handling
 
 Prompt building (PREAMBLE, tool catalog, message rendering) and reply parsing
