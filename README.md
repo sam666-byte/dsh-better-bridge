@@ -232,10 +232,17 @@ few paths. Keep **3 separate terminals** open while in use:
    Check from another terminal: `curl http://127.0.0.1:20232/v1/models`
 
 6. **Start dsh in a new terminal** (if PowerShell complains about execution
-   policy, use CMD instead):
+   policy, use CMD instead). Install dsh globally first — do **not** use
+   `npx` (the `npx @deepseek-ai/dsh` download is currently broken: it is
+   missing the `@deepseek-ai/cordis-plugin-group` dependency and fails with
+   `ERR_MODULE_NOT_FOUND`):
    ```cmd
-   npx @deepseek-ai/dsh web --host 127.0.0.1 --port 3080 --no-open
+   npm install -g @deepseek-ai/dsh
+   dsh web --host 127.0.0.1 --port 3080 --no-open
    ```
+   If the global install still reports the same missing package, install it
+   explicitly first: `npm install -g @deepseek-ai/cordis-plugin-group`, then
+   run `dsh` again.
    Do not use `--host 0.0.0.0` — dsh rejects wildcards. On a VPS, loopback is
    enough: you reach the GUI from inside the VPS (e.g. over RDP). Open the
    token URL printed in the console and log in with your DeepSeek account.
