@@ -15,6 +15,23 @@ chat at chat.deepseek.com is free. This project connects the two worlds:
    the upstream `dsh-better-deepseek` plugin that lets the **Better DeepSeek**
    browser extension use dsh as its execution side.
 
+## 💛 Dukung Kami
+
+This project is free and open source. If it helps you, consider supporting
+its development — any amount, no minimum burden (from Rp1.000).
+
+<p align="center">
+  <a href="https://saweria.co/Nusantaraeaters">
+    <img src="assets/saweria-qr.png" alt="Support via Saweria — scan this QR" width="220">
+  </a>
+</p>
+
+<p align="center">
+  👉 <b><a href="https://saweria.co/Nusantaraeaters">saweria.co/Nusantaraeaters</a></b>
+</p>
+
+> "Dukung Nusantara Bots - aplikasi AI agent gratis di HP. Donasi seikhlasnya buat pengembangan aplikasi. Terima kasih!"
+
 ## Architecture
 
 ```
